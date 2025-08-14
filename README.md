@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Train Finder – Smart Train Journey Search
+
+**Author:** Vardaan Peshawaria  
+
+## Overview
+Train Finder is a Next.js-based application that helps users quickly find and compare train journeys between selected stations. It provides outbound and return journey details in a clean and intuitive interface, allowing users to filter and sort results according to their preferences.
+
+## Features
+- **One-way or roundtrip** search support.
+- Date selection with either return date or number of nights.
+- Sort results by fastest, fewest transfers, or earliest departure.
+- Configurable results per leg.
+- Responsive UI with Tailwind CSS styling.
+- Fully typed using TypeScript for safety and maintainability.
+
+## Tech Stack
+- **Next.js 15** with App Router
+- **React 19**
+- **Tailwind CSS** for responsive styling
+- **TypeScript** for type safety
+- API integration with a transport provider to fetch train data.
+
+## How It Works
+1. User selects trip type, dates, and sorting options.
+2. Application sends a request to the `/api/search` endpoint.
+3. Server fetches journey data from the configured transport API.
+4. Results are displayed in an easy-to-read table with outbound and return journeys.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ and npm
 
+### Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
+cd train-finder
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development
+```bash
+npm run dev
+```
+App will be available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build & Run Production
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Lint & Type Check
+```bash
+npm run lint
+npx tsc --noEmit
+```
 
-## Learn More
+## Deployment
+This app can be deployed easily on **Vercel** or any Node.js server.
 
-To learn more about Next.js, take a look at the following resources:
+## Future Improvements
+- Integrate live pricing data from Trainline or Navitia.
+- Add caching for API responses to reduce load and improve reliability.
+- Enhance UI with seat availability and carbon emission estimates.
+- Handle API rate limits gracefully.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
