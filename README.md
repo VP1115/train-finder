@@ -1,71 +1,74 @@
 # 🚄 Hamburg ⇄ Amsterdam Train Finder
 
-A Next.js web application that allows users to search for train connections between Hamburg and Amsterdam, view outbound and return journeys, and compare travel details such as duration, transfers, and booking links. The app is optimized for both one-way and round-trip searches, with customizable options like date, nights, sorting preference, and number of results per leg.
+A Next.js web application that lets you search for train connections between **Hamburg** and **Amsterdam**, compare travel options, and book directly — all in a clean, responsive interface.
 
-## 🚀 Live Demo
+## 📘 Background & Motivation
 
-[https://train-finder.vercel.app](https://train-finder.vercel.app) (Deployment link will be updated after deployment)
+Imagine this:  
+Our team is exploring the idea of a satellite office in Amsterdam to better serve clients in the Netherlands and tap into the Dutch tech ecosystem. At the same time, many of us love short weekend city trips, and Amsterdam is just a few hours away by train from Hamburg.
+
+Whether it’s a **business trip** with a single overnight stay or a **leisure trip** with a few nights in between, travel planning often means comparing:
+
+- 💶 Cheapest option  
+- 🕒 Fastest route  
+- 🛏️ Number of overnight stays  
+- 🧭 Departure/arrival times each day  
+
+Rather than relying on slow, bloated booking websites, this app is designed to be **lean**, **fast**, and **purpose-built** for Hamburg ⇄ Amsterdam trips.
 
 ## 🎯 Features
 
-- Search for **one-way** or **round-trip** journeys between Hamburg and Amsterdam
-- Configurable:
+- **Trip type:** One-way or round-trip  
+- **Customizable search:**
   - Departure date
-  - Return date or number of nights (for round trips)
-  - Sort by fastest, fewest transfers, or earliest
-  - Set limit for results per leg
-- Displays:
+  - Return date **OR** number of nights (for round trips)
+  - Sort by fastest, fewest transfers, or earliest departure
+  - Limit results per leg (3–5)
+- **Detailed results:**
   - Origin and destination
+  - Departure and arrival times
   - Duration
   - Number of transfers
-  - Operator and train line (if available)
+  - Price (when available)
   - Direct booking link
-  - Price information (when available)
-- Responsive, clean UI using Tailwind CSS
-- API integration with caching and error handling
-- Mobile-friendly design
+- **Responsive design:** Works on desktop and mobile
+- **Error handling:** Clear messages for failed searches
+
+## 🚀 Live Demo
+
+[**View Live App**](https://train-finder.vercel.app)
 
 ## 🛠 Tech Stack
 
-- **Framework:** Next.js (App Router, TypeScript)
-- **Styling:** Tailwind CSS
+- **Framework:** Next.js (App Router) with TypeScript
+- **Styling:** Inline CSS with React style objects
 - **Language:** TypeScript
-- **Backend API Route:** Next.js API endpoint using Deutsche Bahn transport API
-- **Utilities:** Custom date utilities, type-safe models, caching mechanism
+- **Backend API Route:** Next.js API endpoint (connectable to providers like Deutsche Bahn API)
 
 ## 📦 Installation
 
-1. Clone the repository:
-   ```bash
-   git clone <repo-url>
-   cd train-finder
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open in browser:
-   ```
-   http://localhost:3000
-   ```
-
-## 🧪 Testing
-
-Run the tests with:
+Clone the repository:
 ```bash
-npm test
+git clone <repo-url>
+cd train-finder
 ```
+
+Install dependencies:
+```bash
+npm install
+```
+
+Start development server:
+```bash
+npm run dev
+```
+
+Open in your browser:  
+[http://localhost:3000](http://localhost:3000)
 
 ## 🏗 Build & Lint
 
-Run the following before submitting or deploying:
+Before deploying, make sure the build passes and the code is type-safe:
 ```bash
 npm run build
 npm run lint
@@ -80,84 +83,48 @@ train-finder/
 ├── src/
 │   ├── app/              # Pages, layout, global styles
 │   │   ├── api/search    # API route for journey search
-│   │   ├── favicon.ico    # Favicon
-│   │   ├── globals.css    # Global styles
-│   │   ├── layout.tsx     # Root layout
-│   │   ├── page.module.css # Home page styles
-│   │   ├── page.tsx       # Home page component
-│   ├── lib/              # Utility functions & providers
-│   │   ├── date.ts        # Date utility functions
-│   │   ├── providers/     # API providers
+│   │   ├── layout.tsx    # Root layout
+│   │   ├── page.tsx      # Main search page
 │   ├── types/            # TypeScript type definitions
-├── __tests__/            # Unit tests
+│   ├── lib/              # Utility functions
 ├── package.json
 ├── next.config.ts
 ├── tsconfig.json
 ├── eslint.config.mjs
-├── jest.config.js
-├── jest.setup.ts
 └── README.md
 ```
 
-## 🌟 Application Demo
+## 🌟 How to Use
 
-### Quick Start Guide
+1. Select **Trip Type** (One-way or Round-trip).
+2. Choose your **Departure Date**.
+3. For round trips, either:
+   - Set a **Return Date**, or
+   - Specify **Number of Nights**.
+4. Choose **Sort Preference** (Fastest / Fewest Transfers / Earliest).
+5. Set **Options per Leg** (3–5 recommended).
+6. Click **Search**.
+7. View results for outbound and (if applicable) return trips.
+8. Click **Book** to open the external booking page.
 
-1. **Access the Application**
-   Visit [https://train-finder.vercel.app](https://train-finder.vercel.app) (deployment link will be updated after deployment)
+## 🚀 Deployment (Vercel)
 
-2. **Search for Journeys**
-   - Select your trip type (one-way or round-trip)
-   - Choose your departure date
-   - If round-trip, specify the number of nights you want to stay
-   - Select your preferred sorting option (fastest, fewest transfers, or earliest)
-   - Click "Find Trains"
-
-3. **View Results**
-   - Results are displayed in an easy-to-read format with cards on mobile and tables on desktop
-   - Each journey shows duration, number of transfers, departure/arrival times, and price
-   - For round-trips, both outbound and return journeys are displayed
-   - Click "Book Now" to go to the Deutsche Bahn booking page
-
-### Key Features
-
-- **One-Way Trip Search**: Quick search for single journeys
-- **Round-Trip Search**: Plan your complete journey with return options
-- **Multiple Sorting Options**: Sort by fastest, fewest transfers, or earliest departure
-- **Responsive Design**: Works great on mobile, tablet, and desktop
-- **Real-Time Data**: Uses Deutsche Bahn transport API for accurate information
-
-## 🚀 Deployment
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-### Deployment Steps
-
-1. Create a GitHub repository for the project
-2. Push the code to the repository:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin <your-repository-url>
-   git push -u origin main
-   ```
-
-3. Connect your GitHub repository to Vercel:
-   - Go to [Vercel](https://vercel.com)
-   - Sign up or log in
-   - Click "New Project"
-   - Import your GitHub repository
-   - Follow the deployment wizard
-
-4. Update the deployment URL in README.md
-
-The application will be live at your-project-name.vercel.app
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com), sign in, and click **New Project**.
+3. Import your repository.
+4. Follow the deployment steps.
+5. Replace the live link in this README.
 
 ## 📝 Notes
 
-- This project was built with a strong focus on clean, type-safe code and modular architecture.
-- The provider logic is abstracted to easily allow swapping train data sources or adding caching/rate-limit handling.
-- Caching is implemented for both journey data and price data to improve performance.
-- The UI is designed to be responsive and works well on both desktop and mobile devices.
+- The app is currently hardcoded for **Hamburg Hbf → Amsterdam Centraal**.
+- `/api/search` can be adapted to any data provider.
+- Inline styles are used for simplicity — you can easily migrate to Tailwind or CSS Modules later.
+- Fully type-safe — no `any` usage.
+
+## 📌 Future Improvements
+
+- Multi-city trip support
+- More train data sources
+- Price history tracking
+- Favorite routes and saved searches
