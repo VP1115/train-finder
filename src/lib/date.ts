@@ -1,5 +1,5 @@
 export const addDays = (dateStr: string, days: number) => {
-  const d = new Date(dateStr + "T00:00:00");
+  const d = new Date(dateStr);
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return d.toISOString().split('T')[0];
 };

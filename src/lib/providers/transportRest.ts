@@ -60,26 +60,50 @@ function pickCheapestCentsCurrency(tickets?: TRTicket[]) {
 }
 
 /** -------- simple in-memory cache with TTL (per runtime) -------- */
-type CacheVal = { priceCents?: number; currency?: string; ts: number };
-const PRICE_CACHE = new Map<string, CacheVal>();
-const TTL_MS = 5 * 60 * 1000; // 5 minutes
+type PriceCacheVal = { priceCents?: number; currency?: string; ts: number };
+type JourneyCacheVal = { journeys: Journey[]; ts: number };
+export const PRICE_CACHE = new Map<string, PriceCacheVal>();
+export const JOURNEY_CACHE = new Map<string, JourneyCacheVal>();
+const PRICE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const JOURNEY_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-function cacheGet(key: string): CacheVal | undefined {
+function priceCacheGet(key: string): PriceCacheVal | undefined {
   const v = PRICE_CACHE.get(key);
   if (!v) return undefined;
-  if (Date.now() - v.ts > TTL_MS) {
+  if (Date.now() - v.ts > PRICE_TTL_MS) {
     PRICE_CACHE.delete(key);
     return undefined;
   }
   return v;
 }
-function cacheSet(key: string, priceCents?: number, currency?: string) {
+function priceCacheSet(key: string, priceCents?: number, currency?: string) {
   PRICE_CACHE.set(key, { priceCents, currency, ts: Date.now() });
+}
+
+function journeyCacheGet(key: string): JourneyCacheVal | undefined {
+  const v = JOURNEY_CACHE.get(key);
+  if (!v) return undefined;
+  if (Date.now() - v.ts > JOURNEY_TTL_MS) {
+    JOURNEY_CACHE.delete(key);
+    return undefined;
+  }
+  return v;
+}
+function journeyCacheSet(key: string, journeys: Journey[]) {
+  JOURNEY_CACHE.set(key, { journeys, ts: Date.now() });
 }
 
 /** -------- provider -------- */
 export const transportRestProvider: JourneyProvider = {
   async searchJourneys({ originId, destinationId, date, limit = 5, sort = "fastest" }) {
+    // Check journey cache first
+    const journeyCacheKey = `${originId}-${destinationId}-${date}-${limit}-${sort}`;
+    const cachedJourneys = journeyCacheGet(journeyCacheKey);
+    if (cachedJourneys) {
+      // Apply limit to cached results
+      return cachedJourneys.journeys.slice(0, Math.min(limit, 8));
+    }
+
     // Use a normal morning time so we get daytime services
     const departure = `${date}T08:00`;
 
@@ -134,8 +158,8 @@ export const transportRestProvider: JourneyProvider = {
     const anyPrice = mapped.some((m) => typeof m.priceCents === "number");
     if (!anyPrice) {
       const cacheKey = `${originId}-${destinationId}-${date}`;
-      const cached = cacheGet(cacheKey);
-      let fallbackPrice: CacheVal | undefined = cached;
+      const cached = priceCacheGet(cacheKey);
+      let fallbackPrice: PriceCacheVal | undefined = cached;
 
       if (!fallbackPrice) {
         const pUrl = new URL("https://v6.db.transport.rest/prices");
@@ -172,7 +196,7 @@ export const transportRestProvider: JourneyProvider = {
             }
 
             fallbackPrice = { priceCents: cents, currency: curr, ts: Date.now() };
-            cacheSet(cacheKey, cents, curr);
+            priceCacheSet(cacheKey, cents, curr);
           }
         } catch {
           // ignore pricing fallback errors; we’ll keep N/A
@@ -197,6 +221,11 @@ export const transportRestProvider: JourneyProvider = {
       return a.durationMinutes - b.durationMinutes; // fastest
     });
 
-    return sorted.slice(0, Math.min(limit, 8));
+    const result = sorted.slice(0, Math.min(limit, 8));
+    
+    // Cache the results
+    journeyCacheSet(journeyCacheKey, result);
+    
+    return result;
   },
 };
