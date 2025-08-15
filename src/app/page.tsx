@@ -12,13 +12,21 @@ function prettyDuration(minutes: number) {
   const m = minutes % 60;
   return `${h}h ${m}m`;
 }
+
 function hm(iso: string) {
   const d = new Date(iso);
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
+
 function dmy(iso: string) {
   const d = new Date(iso);
   return d.toLocaleDateString();
+}
+
+function formatPrice(priceCents?: number, currency?: string) {
+  if (priceCents == null) return "N/A";
+  const price = priceCents / 100;
+  return `${currency || "€"}${price.toFixed(2)}`;
 }
 
 export default function Page() {
@@ -58,7 +66,7 @@ export default function Page() {
       if (!res.ok) throw new Error(`Request failed: ${res.status}`);
       const json: SearchResponse = await res.json();
       setData(json);
-    } catch (err) {
+    } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Request failed";
       setError(msg);
     } finally {
@@ -72,7 +80,15 @@ export default function Page() {
         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, color: "#00f5d4" }}>
           {title}
         </h2>
-        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#14213d", borderRadius: 8, overflow: "hidden" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            backgroundColor: "#14213d",
+            borderRadius: 8,
+            overflow: "hidden",
+          }}
+        >
           <thead>
             <tr style={{ background: "#00f5d4" }}>
               <th style={th}>From → To</th>
@@ -85,20 +101,33 @@ export default function Page() {
             </tr>
           </thead>
           <tbody>
-            {journeys.map((j, i) => {
+            {journeys.map((j: Journey, i: number) => {
               const first = j.legs[0];
               const last = j.legs[j.legs.length - 1];
               return (
                 <tr key={i} style={{ background: i % 2 ? "#1b2a49" : "#223355" }}>
-                  <td style={td}>{first?.origin.name} → {last?.destination.name}</td>
-                  <td style={td}>{dmy(first.departure)} <span style={{ color: "#f77f00" }}>{hm(first.departure)}</span></td>
-                  <td style={td}>{dmy(last.arrival)} <span style={{ color: "#f77f00" }}>{hm(last.arrival)}</span></td>
+                  <td style={td}>
+                    {first?.origin.name} → {last?.destination.name}
+                  </td>
+                  <td style={td}>
+                    {dmy(first.departure)}{" "}
+                    <span style={{ color: "#f77f00" }}>{hm(first.departure)}</span>
+                  </td>
+                  <td style={td}>
+                    {dmy(last.arrival)}{" "}
+                    <span style={{ color: "#f77f00" }}>{hm(last.arrival)}</span>
+                  </td>
                   <td style={td}>{prettyDuration(j.durationMinutes)}</td>
                   <td style={td}>{j.transfers}</td>
-                  <td style={td}>{(j as any).price ?? "N/A"}</td>
+                  <td style={td}>{formatPrice(j.priceCents, j.currency)}</td>
                   <td style={td}>
                     {j.bookingUrl && (
-                      <a href={j.bookingUrl} target="_blank" rel="noreferrer" style={{ color: "#ff006e", fontWeight: "bold" }}>
+                      <a
+                        href={j.bookingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "#ff006e", fontWeight: "bold" }}
+                      >
                         Book
                       </a>
                     )}
@@ -113,9 +142,20 @@ export default function Page() {
   }
 
   return (
-    <main style={{ maxWidth: 950, margin: "0 auto", padding: 24, backgroundColor: "#0a0f1c", minHeight: "100vh", color: "#fff" }}>
+    <main
+      style={{
+        maxWidth: 950,
+        margin: "0 auto",
+        padding: 24,
+        backgroundColor: "#0a0f1c",
+        minHeight: "100vh",
+        color: "#fff",
+      }}
+    >
       <header style={{ marginBottom: 16 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#00f5d4" }}>Hamburg ⇄ Amsterdam: Smart Train Finder</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#00f5d4" }}>
+          Hamburg ⇄ Amsterdam: Smart Train Finder
+        </h1>
         <p style={{ opacity: 0.9, marginTop: 6, color: "#caffbf" }}>
           One-way or roundtrip. Pick a date and optionally nights; see {limit} options per leg.
         </p>
@@ -124,21 +164,36 @@ export default function Page() {
       <form onSubmit={onSubmit} style={formCard}>
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
           <span style={{ opacity: 0.9, fontSize: 14 }}>Trip:</span>
-          <button type="button" onClick={() => setIsRoundTrip(false)} style={pill(!isRoundTrip)}>One-way</button>
-          <button type="button" onClick={() => setIsRoundTrip(true)} style={pill(isRoundTrip)}>Roundtrip</button>
+          <button type="button" onClick={() => setIsRoundTrip(false)} style={pill(!isRoundTrip)}>
+            One-way
+          </button>
+          <button type="button" onClick={() => setIsRoundTrip(true)} style={pill(isRoundTrip)}>
+            Roundtrip
+          </button>
         </div>
 
         <div style={grid3}>
           <label style={label}>
             <span>Departure date</span>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={input} />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+              style={input}
+            />
           </label>
 
           {isRoundTrip && (
             <>
               <label style={label}>
                 <span>Return date (optional)</span>
-                <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} style={input} />
+                <input
+                  type="date"
+                  value={returnDate}
+                  onChange={(e) => setReturnDate(e.target.value)}
+                  style={input}
+                />
               </label>
 
               <label style={label}>
@@ -147,7 +202,9 @@ export default function Page() {
                   type="number"
                   min={0}
                   value={nights}
-                  onChange={(e) => setNights(parseInt(e.target.value || "0", 10))}
+                  onChange={(e) =>
+                    setNights(parseInt(e.target.value || "0", 10))
+                  }
                   style={input}
                 />
               </label>
@@ -158,7 +215,13 @@ export default function Page() {
         <div style={grid3}>
           <label style={label}>
             <span>Sort</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value as any)} style={input}>
+            <select
+              value={sort}
+              onChange={(e) =>
+                setSort(e.target.value as "fastest" | "fewest-transfers" | "earliest")
+              }
+              style={input}
+            >
               <option value="fastest">Fastest</option>
               <option value="fewest-transfers">Fewest transfers</option>
               <option value="earliest">Earliest</option>
@@ -185,7 +248,9 @@ export default function Page() {
         </div>
       </form>
 
-      {error && <div style={{ color: "#ff4d6d", marginTop: 12, fontSize: 14 }}>{error}</div>}
+      {error && (
+        <div style={{ color: "#ff4d6d", marginTop: 12, fontSize: 14 }}>{error}</div>
+      )}
 
       {data && (
         <>
@@ -203,8 +268,15 @@ const formCard: React.CSSProperties = {
   borderRadius: 16,
   padding: 16,
 };
-const grid3: React.CSSProperties = { display: "grid", gap: 12, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" };
+
+const grid3: React.CSSProperties = {
+  display: "grid",
+  gap: 12,
+  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+};
+
 const label: React.CSSProperties = { display: "block", fontSize: 14, color: "#caffbf" };
+
 const input: React.CSSProperties = {
   width: "100%",
   padding: "8px 10px",
@@ -214,6 +286,7 @@ const input: React.CSSProperties = {
   color: "#fff",
   outline: "none",
 };
+
 const submitBtn: React.CSSProperties = {
   width: "100%",
   padding: "10px 12px",
@@ -224,6 +297,7 @@ const submitBtn: React.CSSProperties = {
   fontWeight: "bold",
   cursor: "pointer",
 };
+
 const pill = (active: boolean): React.CSSProperties => ({
   padding: "6px 10px",
   borderRadius: 999,
@@ -233,5 +307,7 @@ const pill = (active: boolean): React.CSSProperties => ({
   fontWeight: "bold",
   cursor: "pointer",
 });
+
 const th: React.CSSProperties = { textAlign: "left", padding: 8, color: "#000" };
+
 const td: React.CSSProperties = { padding: 8, color: "#fff" };
